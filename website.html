@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FOOD STALLS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="website.css">
+</head>
+<body>
+    <header>
+        <style>.logo {position: absolute; right: 0; top: 0;}</style>
+         <img src="https://happenings.lpu.in/wp-content/uploads/2016/06/logo-1.png" alt="logo" class="logo" height="110" width="250">
+        <h1 style="font-size: 500; text-align: left; font-style: inherit;">Welcome to LPU FOOD STALLS</h1>
+    </header>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#foodstalls">Food Stalls</a>
+        <a href="#teapoint">Tea Points</a>
+        <a href="#rating">Rating</a>
+        <a href="#contact">Contact</a>
+        <a href="#" id="logout">Logout</a>
+  </nav>
+  <script>document.getElementById('logout').addEventListener('click', function (e) {
+    e.preventDefault();
+
+    fetch('/logout', {
+        method: 'POST',
+        credentials: 'include', // Ensure cookies are sent with the request
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redirect to login page
+            window.location.href = 'loginpage.html';
+        } else {
+            alert('Failed to log out');
+        }
+    })
+    .catch(err => {
+        console.error('Error logging out:', err);
+    });
+});
+</script>
+  
+    <div class="search-container">
+        <script>
+            function validateForm() 
+            {let x = document.forms["myForm"]["fname"].value;
+              if (x == "") {
+                alert("Name must be filled out");
+                return false;
+              }
+            }
+            </script>
+            </head>
+            <body>
+            <form name="myForm" action="/dom1.html" onsubmit="return validateForm()" method="post">
+              <input type="text" name="fname">
+              <button type="submit">Search</button>
+            </form>
+    </div><br>
+   <img src="https://qph.cf2.quoracdn.net/main-qimg-83d9bee1e911cef802b2a6f4d5d3c01e-lq" height="600" width="1520">
+        <br><br>
+<main>
+  <h2 id="home">Home</h2>
+  <p>Welcome to the Ultimate Guide to LPU Food Stalls! Discover the diverse and delicious food options available at Lovely Professional University. Whether you're looking for a quick bite between classes or a full meal, we've got you covered. At Lovely Professional University (LPU), food is an integral part of the student experience, reflecting the vibrant culture and diversity of our community. Our food stalls, scattered across the campus, serve not just meals but also a sense of belonging and connection among students, faculty, and visitors. This website is dedicated to showcasing the rich array of culinary delights available at LPU, inviting everyone to explore, enjoy, and indulge.</p>
+  <p><b>A Taste of Diversity</b></p>
+  <p>LPU's food stalls offer a remarkable variety of cuisines that cater to every palate. From traditional Indian dishes to global favorites, our stalls are a melting pot of flavors. Whether you’re in the mood for spicy street food, hearty meals, or refreshing beverages, you’ll find something to satisfy your cravings.</p>
+  <ul type="bold circle"></ul>
+  <li><b>Indian Delicacies:</b>&nbsp;Savor the taste of authentic regional dishes that celebrate India's rich culinary heritage, including biryanis, dosas, and regional snacks.</li>
+  <li><b>International Flavors:</b>&nbsp;Enjoy global cuisines from Thai to Italian, ensuring that there's something for every international palate.</li>
+  <li><b>Healthy Choices:</b>&nbsp;With an increasing focus on wellness, many stalls offer nutritious meals, including salads, whole grains, and organic options, making healthy eating accessible and enjoyable.</li>
+  <p><b>Affordable and Accessible</b></p>
+  We understand that as students, budgeting is essential. That's why LPU food stalls prioritize affordability without compromising on quality. Enjoy delicious meals and snacks at student-friendly prices, ensuring that everyone can relish the taste of good food without financial strain.
+  <p><b>A Social Hub</b></p>
+  Beyond just food, our stalls create a vibrant atmosphere that encourages social interaction and community building. The casual dining experience provides the perfect backdrop for students to connect, relax, and share moments with friends. Whether it’s a quick bite between classes or a leisurely meal after a long day, the food stalls are a popular gathering spot on campus.
+  <p><b>Seasonal Events and Festivals</b></p>
+  Throughout the academic year, LPU hosts various food festivals and themed events that showcase the creativity and diversity of our food offerings. These occasions allow students to explore new flavors, participate in cooking competitions, and enjoy live demonstrations from talented chefs. Keep an eye on our events calendar to join in the fun!
+  <h2 id="about">About</h2>
+  <p>This section contains information about the website.Welcome to your one-stop platform for all things delicious at LPU! This website aims to provide you with comprehensive details about the food stalls on campus, including their specialties, locations, and operating hours.</p>
+  <h2 id="foodstalls">Food Stalls</h2>
+  <p><b>Lovely Bake Studio</b></p>
+  <ul type="bold circle"></ul>
+    <li><b>Location:</b> Block 41</li>
+    <li><b>Specialties:</b> Badam Jamun, cookies, Irish frappes, and a variety of mocktails.</li>
+    <li><b>Description:</b> Your go-to spot for baked goods and sweet treats.</li>
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6Z60khaAhIcdr5ACIfVWRGsLcX0FKSupCRA&s" height="300" width="200">
+    <p><b>Oven Express</b></p>
+    <li><b>Location:</b> Architecture Block 6</li>
+    <li><b>Specialties:</b> Rice Bowl with Nuggets, nutritious sandwiches, Nutella sandwiches.</li>
+    <li><b>Description:</b> Quality and quantity in every bite.</li>
+    <img src="https://th.bing.com/th/id/OIP.hWUIJomrTSQnES-rm2pPxwHaMB?w=115&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7" height="300" width="200">
+    <p><b>Lovely Sweets</b></p>
+    <li><b>Location:</b> 1st floor of Unimall Block 15</li>
+    <li><b>Specialties:</b> Laddus, Manchurian rolls.</li>
+    <li><b>Description:</b> High-quality sweets for a sweet campus life.</li>
+    <img src="https://th.bing.com/th/id/OIP.xEQj5JhCwRf-2PNdJq1YRgHaE8?w=298&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7" height="300" width="200">
+    <p><b>Kitchen Ette</b></p>
+    <li><b>Location:</b> Near apartment Block 41</li>
+    <li><b>Specialties:</b> Parathas, full meals, Panner curry.</li>
+    <li><b>Description:</b> A variety of hearty meals in a cozy setting.</li>
+    <img src="" height="300" width="200">
+    <p><b>Hangouts</b></p>
+    <li><b>Location:</b> Near BH-1&2</li>
+    <li><b>Specialties:</b> All varaities of DOSA and tiffins.</li>
+    <li><b>Description:</b> A variety of hearty tiffins.</li>
+
+    <p><b>Telugu Vantillu</b></p>
+    <li><b>Location:</b> Near BH-1&2</li>
+    <li><b>Specialties:</b> Andhra style Tiffins.</li>
+    <li><b>Description:</b> A variety of hearty tiffins.</li>
+    <h2 id="teapoint">Tea Points</h2>
+    <p><b>Nescafe</b></p>
+    <li><b>Location:</b> Near Uni-hospital</li>
+    <li><b>Specialties:</b> Hot coffee,cold coffee, chai.</li>
+    <li><b>Description:</b> A variety of hearty tiffins.</li>
+    <img src="https://th.bing.com/th/id/OIP.r53Jjs7bFbO2HuRNPS6xcAAAAA?w=115&h=182&c=7&r=0&o=5&dpr=1.3&pid=1.7" height="300" width="200">
+    <p><b>Apnaa chai walla</b></p>
+    <li><b>Location:</b> Near BH-1&2</li>
+    <li><b>Specialties:</b> Hot coffee,cold coffee, Milk Shakes, maggie.</li>
+    <li><b>Description:</b>Quality and quantity in every sip.</li>
+    <img src="data:image/jpeg;base64,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" height="300" width="200">
+    <h2 id="rating">Rating</h2>
+  
+    <table>
+    <thead>
+    <tr>
+    <th>Food Stall/Tea Points</th>
+    <th>Location</th>
+    <th>Rating</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>Lovely Bake Studio</td>
+    <td>Beside Appartments</td>
+    <td>4.3</td>
+    </tr>
+    <tr>
+    <td>Oven Express</td>
+    <td>Near Uni Hospital</td>
+    <td>4.4</td>
+    </tr>
+    <tr>
+    <td>Lovely Sweets</td>
+    <td>unimall</td>
+    <td>4.2</td>
+    </tr>
+    <tr>
+    <td>Kitchen Ellite</td>
+    <td>Near Block 41</td>
+    <td>4.3</td>
+    </tr>
+    <tr>
+    <td>Hangouts</td>
+    <td>Near BH-1&2</td>
+    <td>4.5</td>
+    </tr>
+    <tr>
+    <td>Telugu Vantillu</td>
+    <td>Near BH-1&2</td>
+    <td>4.0</td>
+    </tr>
+    <tr>
+    <td>Nescafe</td>
+    <td>Near Uni-hospital</td>
+    <td>4.2</td>
+    </tr>
+    <tr>
+    <td>Apana chai walla</td>
+    <td>Near BH-1&2</td>
+    <td>4.3</td>
+    </tr>
+    </tbody>
+    </table>
+  <h2 id="contact">Contact</h2>
+  <p>Call us at: <a href="tel:+7989079035" class="phone-link">+91 7989079035</a></p>
+  <p>Email us at: <a href="mailto:komanapallimanibabu2006@gmail.com?subject=Inquiry&cc=cc@example.com&body=Hello, I have a question about...">komanapallimanibabu2006@gmail.com</a></p>
+  <L class="titlelayer"></L><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d8378.783567098482!2d75.69865990735815!3d31.255468399639426!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391a5fb3d3115dbf%3A0x435618b146461dca!2sDepartment%20of%20Education%2C%20LPU!5e1!3m2!1sen!2sin!4v1725123219843!5m2!1sen!2sin" width="1470" height="700" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></p>
+  <footer>
+    <p>&copy; 2024 LPU Food Stalls & Tea Points</p>
+</footer>
+</main>
+</body>
+</html>

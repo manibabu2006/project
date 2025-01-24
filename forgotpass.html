@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="forgotpass.css">
+
+    <title>Forgot Password</title>
+</head>
+<body>
+    <h1>Forgot Password</h1>
+    <form id="forgotPasswordForm" action="/send-otp" method="POST">
+        <label for="username">Registation Number</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
+        <button type="submit">Send OTP</button>
+    </form>
+
+    <form id="resetPasswordForm" action="/reset-password" method="POST" style="display:none;">
+        <label for="otp">OTP:</label>
+        <input type="text" id="otp" name="otp" placeholder="Enter OTP" required>
+        <br>
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required>
+        <button type="submit">Reset Password</button>
+    </form>
+
+    <script>
+        // Display the reset password form after receiving the OTP
+        document.getElementById('forgotPasswordForm').onsubmit = function (e) {
+            e.preventDefault();
+            fetch('/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mobile: document.getElementById('mobile').value }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('OTP sent successfully');
+                    document.getElementById('forgotPasswordForm').style.display = 'none';
+                    document.getElementById('resetPasswordForm').style.display = 'block';
+                } else {
+                    alert(data.message || 'Failed to send OTP');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
