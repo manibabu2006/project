@@ -1,15 +1,13 @@
-require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-const mysql = require('mysql2');
 const path = require('path');
 const twilio = require('twilio');
 
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 
-
+require('dotenv').config();
 // Replace with your actual Twilio credentials
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -17,15 +15,16 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
 const twilioClient = require('twilio')(accountSid, authToken);
 
-
 // MySQL Connection
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'manibabu',
-    password: 'Manibabu@123',
-    database: 'user_db',
-});
+const mysql = require('mysql2');
+require('dotenv').config();
 
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+});
 db.connect(err => {
     if (err) {
         console.error('Error connecting to the database:', err.message);
