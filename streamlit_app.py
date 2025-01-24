@@ -1,33 +1,56 @@
-import os
 import streamlit as st
 import mysql.connector
+import os
 
-# Fetch credentials from environment variables
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+# Function to connect to MySQL database
+def create_connection(host, user, password):
+    try:
+        connection = mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password
+        )
+        return connection
+    except mysql.connector.Error as err:
+        st.error(f"Error: {err}")
+        return None
 
-from dotenv import load_dotenv
+# Streamlit UI to get user input
+st.title("MySQL Connection with Streamlit")
 
-load_dotenv()  # Load environment variables from .env file
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
+# Get credentials from environment variables or user input
+host = st.text_input("Host", "localhost")
+user = st.text_input("User", "root")
+password = st.text_input("Password", type="password")
 
+# Button to connect to the database
+if st.button("Connect to Database"):
+    conn = create_connection(host, user, password)
 
-# Connect to the database
-try:
-    conn = mysql.connector.connect(
-        host="your-database-host",
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database="your-database-name"
-    )
-    st.success("Connected to the database successfully!")
-except mysql.connector.Error as err:
-    st.error(f"Error: {err}")
+    if conn:
+        st.success("Connection successful!")
 
-# Streamlit app content
-st.title("Streamlit App with Secure Credentials")
-st.write("This app securely fetches credentials from environment variables!")
+        # Show databases in MySQL
+        cursor = conn.cursor()
+        cursor.execute("SHOW DATABASES;")
+        databases = cursor.fetchall()
+        
+        # Display the databases in a table
+        st.write("Databases available:")
+        st.table(databases)
 
+        cursor.close()
+        conn.close()
+    else:
+        st.error("Failed to connect to the database.")
 
-
+# Optional: Include an additional query feature
+query = st.text_area("SQL Query", "SELECT * FROM your_table LIMIT 5;")
+if st.button("Run Query"):
+    if conn:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        st.write("Query results:")
+        st.table(results)
+        cursor.close()
