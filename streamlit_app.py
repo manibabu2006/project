@@ -6,6 +6,8 @@ from twilio.rest import Client
 import os
 import time
 from dotenv import load_dotenv
+import streamlit.components.v1 as components
+import random
 
 st.title("User Authentication System")
 
@@ -20,7 +22,6 @@ client = Client(account_sid, auth_token)
 
 # MySQL Connection
 def create_connection():
-    connection = None
     try:
         connection = mysql.connector.connect(
             host=os.getenv('DB_HOST'),
@@ -31,14 +32,14 @@ def create_connection():
         if connection.is_connected():
             db_info = connection.get_server_info()
             st.write(f"Connected to MySQL Server version {db_info}")
+            return connection
     except Error as e:
-        st.write(f"Error: '{e}'")
-    return connection
+        st.error(f"Database connection error: {e}")
+        return None
 
 connection = create_connection()
 
 # Helper: Generate OTP
-import random
 def generate_otp():
     return str(random.randint(100000, 999999))
 
@@ -46,72 +47,89 @@ otp_store = {}
 
 # Login
 def login(username, password):
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
-        st.write("Login successful!")
-        st.experimental_set_query_params(page="website")
+    if connection:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
+            st.write("Login successful!")
+            with open("pages/website.html", 'r') as f:
+                html_data = f.read()
+                st.markdown(html_data, unsafe_allow_html=True)
+        else:
+            st.write("Invalid username or password")
     else:
-        st.write("Invalid username or password")
+        st.write("No database connection available")
 
 # Register
 def register(username, password, mobile):
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    if cursor.fetchone():
-        st.write("Username already exists")
+    if connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        if cursor.fetchone():
+            st.write("Username already exists")
+        else:
+            hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+            cursor.execute("INSERT INTO users (username, password, mobile) VALUES (%s, %s, %s)", (username, hashed_pw, mobile))
+            connection.commit()
+            st.write("Registration successful! You can now log in.")
     else:
-        hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-        cursor.execute("INSERT INTO users (username, password, mobile) VALUES (%s, %s, %s)", (username, hashed_pw, mobile))
-        connection.commit()
-        st.write("Registration successful! You can now log in.")
+        st.write("No database connection available")
 
 # Change Password
 def change_password(username, current_pw, new_pw):
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    if user and bcrypt.checkpw(current_pw.encode(), user['password'].encode()):
-        hashed_pw = bcrypt.hashpw(new_pw.encode(), bcrypt.gensalt()).decode()
-        cursor.execute("UPDATE users SET password = %s WHERE username = %s", (hashed_pw, username))
-        connection.commit()
-        st.write("Password changed successfully!")
+    if connection:
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        if user and bcrypt.checkpw(current_pw.encode(), user['password'].encode()):
+            hashed_pw = bcrypt.hashpw(new_pw.encode(), bcrypt.gensalt()).decode()
+            cursor.execute("UPDATE users SET password = %s WHERE username = %s", (hashed_pw, username))
+            connection.commit()
+            st.write("Password changed successfully!")
+        else:
+            st.write("Invalid current password")
     else:
-        st.write("Invalid current password")
+        st.write("No database connection available")
 
 # Send OTP
 def send_otp(username):
-    cursor = connection.cursor()
-    cursor.execute("SELECT mobile FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    if user:
-        otp = generate_otp()
-        otp_store[user[0]] = {"otp": otp, "expires_at": time.time() + 300}  # expires in 5 minutes
-        client.messages.create(
-            body=f"Your verification OTP is: {otp}",
-            from_=twilio_phone_number,
-            to=user[0]
-        )
-        st.write("OTP sent successfully")
+    if connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT mobile FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        if user:
+            otp = generate_otp()
+            otp_store[user[0]] = {"otp": otp, "expires_at": time.time() + 300}  # expires in 5 minutes
+            client.messages.create(
+                body=f"Your verification OTP is: {otp}",
+                from_=twilio_phone_number,
+                to=user[0]
+            )
+            st.write("OTP sent successfully")
+        else:
+            st.write("User not found")
     else:
-        st.write("User not found")
+        st.write("No database connection available")
 
 # Verify OTP
 def verify_otp(username, otp):
-    cursor = connection.cursor()
-    cursor.execute("SELECT mobile FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
-    if user:
-        mobile = user[0]
-        stored_otp = otp_store.get(mobile, {})
-        if stored_otp.get("otp") == otp and stored_otp.get("expires_at") > time.time():
-            del otp_store[mobile]
-            st.write("Mobile number verified successfully")
+    if connection:
+        cursor = connection.cursor()
+        cursor.execute("SELECT mobile FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
+        if user:
+            mobile = user[0]
+            stored_otp = otp_store.get(mobile, {})
+            if stored_otp.get("otp") == otp and stored_otp.get("expires_at") > time.time():
+                del otp_store[mobile]
+                st.write("Mobile number verified successfully")
+            else:
+                st.write("Invalid or expired OTP")
         else:
-            st.write("Invalid or expired OTP")
+            st.write("User not found")
     else:
-        st.write("User not found")
+        st.write("No database connection available")
 
 # Streamlit interface
 st.sidebar.title("Navigation")
@@ -155,11 +173,11 @@ elif page == "Verify OTP":
 
 # Close connection
 def close_connection(connection):
-    if connection.is_connected():
+    if connection and connection.is_connected():
         connection.close()
         st.write("MySQL connection is closed")
 
 st.sidebar.text("")
-if st.button("Logout"):
+if st.sidebar.button("Logout"):
     close_connection(connection)
     st.write("Logout successful")
