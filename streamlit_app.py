@@ -5,22 +5,11 @@ import os
 import time
 from dotenv import load_dotenv
 import random
-from mysql.connector.pooling import MySQLConnectionPool
+import mysql.connector
 from mysql.connector import Error
 
 # Load environment variables
 load_dotenv()
-
-# Database configuration
-db_config = {
-    'host': os.getenv('DB_HOST'),
-    'user': os.getenv('DB_USER'),
-    'password': os.getenv('DB_PASSWORD'),
-    'database': os.getenv('DB_NAME')
-}
-
-# MySQL connection pool
-connection_pool = MySQLConnectionPool(pool_name="mypool", pool_size=5, **db_config)
 
 # Twilio setup
 account_sid = os.getenv('TWILIO_ACCOUNT_SID')
@@ -36,17 +25,25 @@ def generate_otp():
     return str(random.randint(100000, 999999))
 
 # Database connection
-def get_connection():
+def create_connection():
     try:
-        connection = connection_pool.get_connection()
-        return connection
+        connection = mysql.connector.connect(
+            host=os.getenv('DB_HOST'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            database=os.getenv('DB_NAME')
+        )
+        if connection.is_connected():
+            db_info = connection.get_server_info()
+            st.write(f"Connected to MySQL Server version {db_info}")
+            return connection
     except Error as e:
         st.error(f"Database connection error: {e}")
         return None
 
 # Helper: Execute query
 def execute_query(query, params=None, fetchone=False):
-    connection = get_connection()
+    connection = create_connection()  # Use create_connection to get a new connection
     if not connection:
         return None
     try:
@@ -71,8 +68,8 @@ def login(username, password):
     if user and bcrypt.checkpw(password.encode(), user['password'].encode()):
         st.success("Login successful!")
         with open("pages/website.html", 'r') as f:
-                html_data = f.read()
-                st.components.v1.html(html_data, height=800, scrolling=True)
+            html_data = f.read()
+            st.components.v1.html(html_data, height=800, scrolling=True)
     else:
         st.error("Invalid username or password")
 
