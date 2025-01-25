@@ -92,48 +92,25 @@ def change_password(username, current_pw, new_pw):
     else:
         st.write("No database connection available")
 
-# Send OTP
-def send_otp(username):
+# Forgot Password
+def forgot_password(username):
     if connection:
-        cursor = connection.cursor()
-        cursor.execute("SELECT mobile FROM users WHERE username = %s", (username,))
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         user = cursor.fetchone()
         if user:
-            otp = generate_otp()
-            otp_store[user[0]] = {"otp": otp, "expires_at": time.time() + 300}  # expires in 5 minutes
-            client.messages.create(
-                body=f"Your verification OTP is: {otp}",
-                from_=twilio_phone_number,
-                to=user[0]
-            )
-            st.write("OTP sent successfully")
+            # Send OTP to user for password reset
+            send_otp(username)  # Ensure you have a send_otp function that works as expected
+            st.write("OTP sent to your registered mobile number")
         else:
             st.write("User not found")
     else:
         st.write("No database connection available")
 
-# Verify OTP
-def verify_otp(username, otp):
-    if connection:
-        cursor = connection.cursor()
-        cursor.execute("SELECT mobile FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone()
-        if user:
-            mobile = user[0]
-            stored_otp = otp_store.get(mobile, {})
-            if stored_otp.get("otp") == otp and stored_otp.get("expires_at") > time.time():
-                del otp_store[mobile]
-                st.write("Mobile number verified successfully")
-            else:
-                st.write("Invalid or expired OTP")
-        else:
-            st.write("User not found")
-    else:
-        st.write("No database connection available")
 
 # Streamlit interface
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Login", "Register", "Change Password", "Send OTP", "Verify OTP"])
+page = st.sidebar.radio("Go to", ["Login", "Register", "Change Password","Forgot Password"])
 
 if page == "Login":
     st.header("Login")
@@ -148,7 +125,11 @@ elif page == "Register":
     password = st.text_input("Password", type="password")
     mobile = st.text_input("Mobile")
     if st.button("Register"):
-        register(username, password, mobile)
+        try:
+            register(username, password, mobile)
+            st.success("Registration successful")
+        except Exception as e:
+            st.error(f"Registration failed: {e}")
 
 elif page == "Change Password":
     st.header("Change Password")
@@ -156,21 +137,49 @@ elif page == "Change Password":
     current_pw = st.text_input("Current Password", type="password")
     new_pw = st.text_input("New Password", type="password")
     if st.button("Change Password"):
-        change_password(username, current_pw, new_pw)
+        try:
+            change_password(username, current_pw, new_pw)
+            st.success("Password changed successfully")
+        except Exception as e:
+            st.error(f"Password change failed: {e}")
 
-elif page == "Send OTP":
-    st.header("Send OTP")
-    username = st.text_input("Username")
-    if st.button("Send OTP"):
-        send_otp(username)
+elif page == "Forgot Password":
+    st.header("Forgot Password")
+    with st.form(key='forgot_password_form'):
+        username = st.text_input('Registration Number', key='username')
+        mobile = st.text_input('Mobile Number', placeholder='Enter your mobile number', key='mobile')
+        submit_otp = st.form_submit_button('Send OTP')
+    if submit_otp:
+        try:
+            send_otp(username, mobile)
+            st.success('OTP sent successfully')
+        except Exception as e:
+            st.error(f"Failed to send OTP: {e}")
 
 elif page == "Verify OTP":
     st.header("Verify OTP")
     username = st.text_input("Username")
     otp = st.text_input("OTP")
     if st.button("Verify OTP"):
-        verify_otp(username, otp)
+        try:
+            verify_otp(username, otp)
+            st.success("OTP verified successfully")
+        except Exception as e:
+            st.error(f"OTP verification failed: {e}")
 
+elif page == "Change Password":
+    st.header("Change Password")
+    username = st.text_input("Username")
+    current_pw = st.text_input("Current Password", type="password")
+    new_pw = st.text_input("New Password", type="password")
+    if st.button("Change Password"):
+        try:
+            change_password(username, current_pw, new_pw)
+            st.success("Password changed successfully")
+        except Exception as e:
+            st.error(f"Password change failed: {e}")
+
+    
 # Close connection
 def close_connection(connection):
     if connection and connection.is_connected():
