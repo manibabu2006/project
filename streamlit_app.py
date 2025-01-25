@@ -15,7 +15,7 @@ load_dotenv()
 account_sid = os.getenv('TWILIO_ACCOUNT_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 twilio_phone_number = os.getenv('TWILIO_PHONE_NUMBER')
-client = Client(account_sid, auth_token)
+client = Client('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN')
 
 # OTP storage
 otp_store = {}
