@@ -16,8 +16,7 @@ account_sid = os.getenv('TWILIO_ACCOUNT_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 twilio_phone_number = os.getenv('TWILIO_PHONE_NUMBER')
 client = Client('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN')
-
-# OTP storage
+#OTP storage
 otp_store = {}
 
 # Helper: Generate OTP
@@ -34,12 +33,12 @@ def create_connection():
             database=os.getenv('DB_NAME')
         )
         if connection.is_connected():
-            db_info = connection.get_server_info()
-            st.write(f"Connected to MySQL Server version {db_info}")
+            st.write("Successfully connected to the database")
             return connection
     except Error as e:
-        st.error(f"Database connection error: {e}")
+        st.error(f"Error: {e}")
         return None
+
 
 # Helper: Execute query
 def execute_query(query, params=None, fetchone=False):
